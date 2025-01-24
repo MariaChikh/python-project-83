@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def connect_db(app):
-    return psycopg2.connect('postgresql://maria:password123@localhost:5432/page_analyzer')
+    return psycopg2.connect(app.config['DATABASE_URL'])
 
 
 def close_connection(conn):
