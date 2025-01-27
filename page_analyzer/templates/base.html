@@ -17,10 +17,16 @@
     </div>
   </nav>
   
-    </header>
+  </header>
+
+  {% block notifications %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+      {% endfor %}
+  {% endwith %}
+  {% endblock %}
     
-    
-  
     <main class="flex-grow-1">
       {% block content %}{% endblock %}
     </main>
