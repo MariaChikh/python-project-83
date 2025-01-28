@@ -47,10 +47,11 @@ def add_url():
 def show_url(id):
     conn = db.connect_db(app)
     url = db.get_url_by_id(conn, id)
+    checks = db.get_checks(conn, id)
     if not url:
         abort(404)
     db.close_connection(conn)
-    return render_template('url.html', url=url)
+    return render_template('url.html', url=url, checks=checks)
 
 
 @app.route('/urls', methods = ['GET'])
@@ -71,9 +72,10 @@ def check_url(id):
     except requests.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
         db.close_connection(conn)
-        #return redirect(url_for('show_url', id=id))
+    status = response.status_code
+    db.insert_checks(conn, id, status)
     flash('Страница успешно проверена', 'success')
-    db.close_connection
+    db.close_connection(conn)
     return redirect(url_for('show_url', id=id))
 
 
