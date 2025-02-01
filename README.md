@@ -1,6 +1,8 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/MariaChikh/python-project-83/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/MariaChikh/python-project-83/actions)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/15c13623b4168c5f781a/maintainability)](https://codeclimate.com/github/MariaChikh/python-project-83/maintainability)
+
 ## Page Analyzer
 
 ## Description
