@@ -1,11 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
-import requests
 import os
-from datetime import datetime
+
+import requests
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+
 from page_analyzer import db_manager as db
 from page_analyzer.utils import is_valid, normalize_url
-from dotenv import load_dotenv
-
 
 load_dotenv()
 app = Flask(__name__)
@@ -19,7 +27,8 @@ def index():
         'index.html',
     )
 
-@app.route('/urls', methods = ['POST'])
+
+@app.route('/urls', methods=['POST'])
 def add_url():
     url = request.form.to_dict()['url']
 
@@ -43,7 +52,7 @@ def add_url():
     return redirect(url_for('show_url', id=url_id))
 
 
-@app.route('/urls/<int:id>', methods = ['GET'])
+@app.route('/urls/<int:id>', methods=['GET'])
 def show_url(id):
     conn = db.connect_db(app)
     url = db.get_url_by_id(conn, id)
@@ -54,7 +63,7 @@ def show_url(id):
     return render_template('url.html', url=url, checks=checks)
 
 
-@app.route('/urls', methods = ['GET'])
+@app.route('/urls', methods=['GET'])
 def show_urls():
     conn = db.connect_db(app)
     urls = db.get_urls(conn)
@@ -62,7 +71,7 @@ def show_urls():
     return render_template('urls.html', urls=urls)
 
 
-@app.route('/urls/<int:id>/checks', methods = ['POST'])
+@app.route('/urls/<int:id>/checks', methods=['POST'])
 def check_url(id):
     conn = db.connect_db(app)
     url = db.get_url_by_id(conn, id)
@@ -72,8 +81,8 @@ def check_url(id):
     except requests.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
         db.close_connection(conn)
-    status = response.status_code
-    db.insert_checks(conn, id, status)
+    url_info = db.extract_page_data(response)
+    db.insert_checks(conn, id, url_info)
     flash('Страница успешно проверена', 'success')
     db.close_connection(conn)
     return redirect(url_for('show_url', id=id))
