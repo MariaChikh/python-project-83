@@ -80,7 +80,7 @@ def check_url(id):
         response.raise_for_status()
     except requests.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
-        db.close_connection(conn)
+
     url_info = db.extract_page_data(response)
     db.insert_checks(conn, id, url_info)
     flash('Страница успешно проверена', 'success')
