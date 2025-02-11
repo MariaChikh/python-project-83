@@ -5,8 +5,7 @@ DROP TABLE IF EXISTS checks;
 CREATE TABLE urls (
     id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(255) UNIQUE,
-    created_at DATE
-);
+    created_at DATE);
 
 
 CREATE TABLE checks (

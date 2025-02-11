@@ -1,7 +1,4 @@
-import os
-
 import requests
-from dotenv import load_dotenv
 from flask import (
     Flask,
     abort,
@@ -13,12 +10,12 @@ from flask import (
 )
 
 from page_analyzer import db_manager as db
+from page_analyzer.settings import DATABASE_URL, SECRET_KEY
 from page_analyzer.utils import is_valid, normalize_url
 
-load_dotenv()
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['DATABASE_URL'] = os.getenv('DATABASE_URL')
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['DATABASE_URL'] = DATABASE_URL
 
 
 @app.route('/')
@@ -53,7 +50,7 @@ def add_url():
 
 
 @app.route('/urls/<int:id>', methods=['GET'])
-def show_url(id):
+def show_url(id: int):
     conn = db.connect_db(app)
     url = db.get_url_by_id(conn, id)
     checks = db.get_checks(conn, id)
@@ -72,7 +69,7 @@ def show_urls():
 
 
 @app.route('/urls/<int:id>/checks', methods=['POST'])
-def check_url(id):
+def check_url(id: int):
     conn = db.connect_db(app)
     url = db.get_url_by_id(conn, id)
     try:
