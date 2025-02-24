@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 from requests import Response
 
-def extract_page_data(url_response: Response):
+
+def extract_page_data(url_response: Response) -> dict:
     '''Extract the following page data from given url: 
     h1, title, status_code and description'''
 

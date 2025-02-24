@@ -19,7 +19,7 @@ This web application is a tool for analyzing web pages for SEO suitability. It c
 
 ## Installation:
 
-1. To install the application using the command line, use the command: git clone git@github.com:MariaChikh/python-project-83.git
+1. To install the application using the command line, use the command: ```git clone git@github.com:MariaChikh/python-project-83.git```
 Then you have to set SECRET_KEY and DATABASE_URL, you can find examples in 'example.env'. Copy this file and rename to '.env'.
 2. Use this commands:
 - make install - to install dependencies

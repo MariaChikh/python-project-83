@@ -1,16 +1,21 @@
-import psycopg2
+from contextlib import contextmanager
+from typing import NamedTuple
+
 from psycopg2.extras import NamedTupleCursor
 
-
-def connect_db(app):
-    return psycopg2.connect(app.config['DATABASE_URL'])
+from page_analyzer.db_pool import pool
 
 
-def close_connection(conn):
-    conn.close()
+@contextmanager
+def get_db_connection():
+    conn = pool.getconn()
+    try:
+        yield conn
+    finally:
+        pool.putconn(conn)
 
 
-def insert_url(conn, url: str):
+def insert_url(conn, url: str) -> int:
     '''Inserts a new url in database'''
 
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
@@ -21,7 +26,7 @@ def insert_url(conn, url: str):
     return result
 
 
-def get_url_by_name(conn, url: str):
+def get_url_by_name(conn, url: str) -> NamedTuple:
     '''Extracts an url from database by it's name'''
 
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
@@ -31,7 +36,7 @@ def get_url_by_name(conn, url: str):
     return result
 
 
-def get_url_by_id(conn, url: str):
+def get_url_by_id(conn, url: str) -> NamedTuple:
     '''Extracts an url from database by it's id'''
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute('''SELECT id, name, created_at
@@ -40,7 +45,7 @@ def get_url_by_id(conn, url: str):
     return result
 
 
-def get_urls(conn):
+def get_urls(conn) -> NamedTuple:
     '''Shows all urls added to database'''
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute('''
@@ -56,7 +61,7 @@ def get_urls(conn):
         return curs.fetchall()
      
 
-def insert_checks(conn, id: int, content: dict):
+def insert_checks(conn, id: int, content: dict) -> int:
     '''Inserts url checks to database'''
 
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
@@ -74,7 +79,7 @@ def insert_checks(conn, id: int, content: dict):
     return result
 
 
-def get_checks(conn, url_id: int):
+def get_checks(conn, url_id: int) -> NamedTuple:
     '''Shows all url's checks added to database'''
     with conn.cursor(cursor_factory=NamedTupleCursor) as curs:
         curs.execute('SELECT * from checks WHERE url_id=%s;', (url_id,))

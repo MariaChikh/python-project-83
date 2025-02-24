@@ -1,19 +1,17 @@
 import requests
 from flask import (
-    Flask,
+    Blueprint,
     abort,
     flash,
     redirect,
     render_template,
     request,
     url_for,
-    Blueprint,
-    current_app,
 )
 
 from page_analyzer import db_manager as db
-from page_analyzer.utils import is_valid, normalize_url
 from page_analyzer.parser import extract_page_data
+from page_analyzer.utils import is_valid, normalize_url
 
 main_bp = Blueprint('main', __name__)
 
@@ -37,7 +35,7 @@ def add_url():
         ), 422
     
     normalized_url = normalize_url(url)
-    with db.connect_db(current_app) as conn:
+    with db.get_db_connection() as conn:
         existed_url = db.get_url_by_name(conn, normalized_url)
         if existed_url:
             flash('Страница уже существует', 'warning')
@@ -50,7 +48,7 @@ def add_url():
 
 @main_bp.route('/urls/<int:id>', methods=['GET'])
 def show_url(id: int):
-    with db.connect_db(current_app) as conn:
+    with db.get_db_connection() as conn:
         url = db.get_url_by_id(conn, id)
         checks = db.get_checks(conn, id)
     if not url:
@@ -60,14 +58,14 @@ def show_url(id: int):
 
 @main_bp.route('/urls', methods=['GET'])
 def show_urls():
-    with db.connect_db(current_app) as conn:
+    with db.get_db_connection() as conn:
         urls = db.get_urls(conn)
     return render_template('urls.html', urls=urls)
 
 
 @main_bp.route('/urls/<int:id>/checks', methods=['POST'])
 def check_url(id: int):
-    with db.connect_db(current_app) as conn:
+    with db.get_db_connection() as conn:
         url = db.get_url_by_id(conn, id)
         if not url:
             abort(404)
